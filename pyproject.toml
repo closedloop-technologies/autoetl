@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "quantready-api"
+name = "autoetl"
 version = "0.1.0"
 description = "A template to build and deploy fastapi applications"
 authors = ["Sean Kruzel <sean@closedloop.tech>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "quantready_api" }]
+packages = [{ include = "autoetl" }]
 classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Programming Language :: Python :: 3.10",
@@ -13,8 +13,8 @@ classifiers = [
 ]
 
 [tool.poetry.urls]
-"Repository" = "https://github.com/closedLoop/quantready-api"
-"Bug Tracker" = "https://github.com/closedLoop/quantready-api/issues"
+"Repository" = "https://github.com/closedLoop/autoetl"
+"Bug Tracker" = "https://github.com/closedLoop/autoetl/issues"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -46,7 +46,7 @@ pip-upgrader = "^1.4.15"
 pyupgrade = "^3.15.0"
 
 [tool.poetry.scripts]
-quantready-api = "quantready_api.cli:app"
+autoetl = "autoetl.cli:app"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,18 +1,19 @@
-"""Loads the configuration file for the QuantReady package."""
+"""Loads the configuration file for the AutoETL package."""
+
 # Load the configuration file
 from dataclasses import dataclass
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-from quantready_api import __description__ as description
-from quantready_api import __name__ as name
-from quantready_api import __version__ as version
+from autoetl import __description__ as description
+from autoetl import __name__ as name
+from autoetl import __version__ as version
 
 
 @dataclass
 class Config:
-    """Configuration class for QuantReady"""
+    """Configuration class for AutoETL"""
 
     # Add configuration variables here
     # Example:

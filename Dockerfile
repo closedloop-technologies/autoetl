@@ -1,4 +1,4 @@
-ARG APP_NAME=quantready_api
+ARG APP_NAME=autoetl
 
 # Base image
 FROM python:3.10-slim-buster as staging
@@ -34,10 +34,10 @@ COPY . /app/
 RUN poetry install --no-interaction
 
 # # Command to run tests
-RUN poetry run pytest --cov quantready_api && poetry run coverage report
+RUN poetry run pytest --cov autoetl && poetry run coverage report
 
 ENTRYPOINT [ "poetry", "run" ]
-CMD [ "python", "-m", "quantready_api", "info" ]
+CMD [ "python", "-m", "autoetl", "info" ]
 
 
 FROM staging as build
@@ -68,4 +68,4 @@ COPY --from=build /app/dist/*.whl ./
 COPY --from=build /app/constraints.txt ./
 RUN pip install ./$APP_NAME*.whl --constraint constraints.txt
 ENTRYPOINT [ "python"]
-CMD [ "-m", "quantready_api", "info" ]
+CMD [ "-m", "autoetl", "info" ]

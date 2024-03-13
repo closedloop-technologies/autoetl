@@ -1,9 +1,10 @@
 """Tests the CRUD actions in the CLI for taskforce"""
+
 import unittest
 
 from typer.testing import CliRunner
 
-from quantready_api import cli
+from autoetl import cli
 
 
 class TestCLI(unittest.TestCase):
