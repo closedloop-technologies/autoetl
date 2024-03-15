@@ -9,7 +9,7 @@ class TestInstall(unittest.TestCase):
         self.assertIsNotNone(autoetl)
 
     def test_module(self):
-        run(["python", "-m", "autoetl", "--help"])
+        run(["python3", "-m", "autoetl", "--help"])
 
     def test_consolescript(self):
-        run(["autoetl", "--help"])
+        run(["poetry", "shell", "-c", "autoetl", "--help"])

@@ -13,8 +13,8 @@ classifiers = [
 ]
 
 [tool.poetry.urls]
-"Repository" = "https://github.com/closedLoop/autoetl"
-"Bug Tracker" = "https://github.com/closedLoop/autoetl/issues"
+"Repository" = "https://github.com/closedloop-technologies/autoetl"
+"Bug Tracker" = "https://github.com/closedloop-technologies/autoetl/issues"
 
 [tool.poetry.dependencies]
 python = "^3.10"

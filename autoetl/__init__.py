@@ -1,2 +1,3 @@
-__version__ = "0.1.0"
-__description__ = "A template to build and deploy fastapi applications"
+name = "autoETL"
+__version__ = "0.1.1"
+__description__ = "Wire up APIs with databases in minutes. Ingest, persist, enrich, merge and serve data automagically."
