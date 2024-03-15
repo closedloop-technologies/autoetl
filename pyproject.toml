@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "autoetl"
-version = "0.1.0"
-description = "A template to build and deploy fastapi applications"
+version = "0.1.1"
+description = "Wire up APIs with databases in minutes. Ingest, persist, enrich, merge and serve data automagically."
 authors = ["Sean Kruzel <sean@closedloop.tech>"]
-license = "MIT"
+license = "AGPL-3.0"
 readme = "README.md"
 packages = [{ include = "autoetl" }]
 classifiers = [
