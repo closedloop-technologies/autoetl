@@ -5,6 +5,8 @@ from pathlib import Path
 
 import yaml
 
+from autoetl.admin import upsert_project_in_config
+from autoetl.config import Config, load_config
 from autoetl.helpers import make_valid_folder_name
 from autoetl.service import Service
 from autoetl.templates import get_templates
@@ -31,6 +33,31 @@ FILE_STRUCTURES = {
     # "deployment": ["config.yaml", "run.py"],
     # "serve": ["spec.yaml", "openapi.yaml", "model.py", "api.py"]
 }
+
+
+def delete_project_files(fdir: str | Path):
+    fdir = Path(fdir)
+    if not fdir.exists():
+        raise FileNotFoundError(f"Project directory {fdir} does not exist")
+    autoetl_yaml = fdir / "autoetl.yaml"
+    if not autoetl_yaml.exists():
+        raise FileNotFoundError(
+            f"autoetl.yaml file not found in {fdir}. Is this a valid project?"
+        )
+
+    for base_dir in BASE_DIRS:
+        base_dir = fdir / base_dir
+        if base_dir.exists():
+            # TODO might need to add a check for subfolders
+            for file in base_dir.iterdir():
+                file.unlink()
+            base_dir.rmdir()
+
+    autoetl_yaml = fdir / "autoetl.yaml"
+    autoetl_yaml.unlink()
+    autoetl_env = fdir / ".env"
+    autoetl_env.unlink()
+    fdir.rmdir()
 
 
 def create_file_from_template(path, template_name):
@@ -62,11 +89,22 @@ class ETLProject:
         description: str = None,
         fdir: str | Path | None = None,
         project_id: str | None = None,
+        created_at: datetime.datetime | None = None,
+        config: Config | None = None,
+        **kwargs,
     ):
         if not name:
             raise ValueError("Project name is required")
         self.name = name
-        self.fdir, self.id = self._set_project_and_fdir(name, fdir, project_id)
+        self.description = description
+        self.created_at = created_at
+        self._config: Config = config or load_config()
+        self.id = None
+        self.fdir = None
+
+        self.fdir, self.id = self._set_project_and_fdir(
+            name, fdir, kwargs.get("id", project_id)
+        )
 
         try:
             self.load(self.fdir)
@@ -79,6 +117,9 @@ class ETLProject:
         self.created_at = self.created_at or datetime.datetime.now(
             datetime.timezone.utc
         )
+
+        # Create an activate project in config
+        upsert_project_in_config(self)
 
     def dict(self, safe=False):
         return {
@@ -121,12 +162,16 @@ class ETLProject:
                 f"autoetl.yaml file not found in {fdir}. Is this a valid project?"
             )
         with open(autoetl_yaml) as f:
-            settings = yaml.safe_load(f) if len(f.read()) else {}
-        self.name = settings.get("name")
-        self.description = settings.get("description")
-        self.created_at = settings.get("created_at")
+            if len(f.read()) == 0:
+                raise FileNotFoundError(
+                    f"autoetl.yaml file is empty in {fdir}. Is this a valid project?"
+                )
+            settings = yaml.safe_load(f) or {}
+        self.name = settings.get("name") or self.name
+        self.description = settings.get("description") or self.description
+        self.created_at = settings.get("created_at") or self.created_at
+        self.id = settings.get("id") or self.id
         self.fdir = Path(fdir)
-        self.id = settings.get("id")
 
     def init(self):
         """Initializes the project"""
@@ -145,27 +190,7 @@ class ETLProject:
 
     async def teardown(self):
         """Tears down the project"""
-        fdir = Path(self.fdir)
-        if not fdir.exists():
-            raise FileNotFoundError(f"Project directory {fdir} does not exist")
-        autoetl_yaml = fdir / "autoetl.yaml"
-        if not autoetl_yaml.exists():
-            raise FileNotFoundError(
-                f"autoetl.yaml file not found in {fdir}. Is this a valid project?"
-            )
-
-        for base_dir in BASE_DIRS:
-            base_dir = fdir / base_dir
-            if base_dir.exists():
-                # TODO might need to add a check for subfolders
-                for file in base_dir.iterdir():
-                    file.unlink()
-                base_dir.rmdir()
-
-        autoetl_yaml = fdir / "autoetl.yaml"
-        autoetl_yaml.unlink()
-        autoetl_env = fdir / ".env"
-        autoetl_env.unlink()
+        self.delete_project_files(self.fdir)
         logger.info(f"Deleted project {self.name} from {self.fdir}")
 
     async def add_api(

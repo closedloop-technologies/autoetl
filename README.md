@@ -25,5 +25,15 @@ Creates this folder structure
 └── serve
 ```
 
+```bash
+# Initialize a new AutoETL project and enter the directory
+autoetl init petstore \
+    --source "https://petstore.swagger.io/v2/swagger.json" \
+    # --source "https://petstore.swagger.io/"
+    --env=.env
+
+autoetl crawl --project petstore
+```
+
 ## Coming Soon
 Read more at [autoetl.dev](https://autoetl.dev) or email us at [sean@closedloop.tech](mailto:sean@closedloop.tech)

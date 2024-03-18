@@ -2,6 +2,7 @@
 
 # Load the configuration file
 from dataclasses import dataclass
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -21,16 +22,25 @@ class Config:
     name: str = name
     description: str = description
     version: str = version
+    env_file: str = ".env"
+    config_dir: str = Path.home().joinpath(".autoetl")
 
 
 def load_config() -> Config:
-    load_dotenv(
-        verbose=True,
-        dotenv_path=Path(__file__).parent.joinpath(".env"),
-        override=False,
+    config_dir = Path(
+        os.environ.get("AUTOETL_CONFIG_DIR", None) or Path.home()
+    ).joinpath(".autoetl")
+    env_file = Path(
+        os.environ.get("AUTOETL_ENV_FILE", None)
+        or Path(__file__).parent.joinpath(".env")
     )
+
+    load_dotenv(verbose=True, dotenv_path=env_file, override=False)
+
     return Config(
         name=name,
         description=description,
         version=version,
+        env_file=str(env_file),
+        config_dir=str(config_dir),
     )

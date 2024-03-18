@@ -1,7 +1,26 @@
 # Usage of AutoETL
+An advanced Code Generation tool
+
 API Documentation, Discovery, Governance (Monitoring), Security and Deployment
 
 https://chat.openai.com/share/9f44197d-d4a5-4c9d-9d86-711c88113a4b
+
+
+* Connect API to Database fast - Devs spend 30% of their time on this
+* Improve documentation - 80%+ of the time, the documentation is wrong
+  - Improve documentation of your vendors
+  - Improve your own documentation
+  - Share documentation with your team
+* Robustness
+  - Monitor Sources for errors
+  - Vendor changes API
+  - Performance Degradation
+  - Cost Monitoring
+* Security
+  - Rate Limiting
+  - Authentication
+  - Data Validation
+  - Data Privacy
 
 
 Here's the main user story.
@@ -17,13 +36,21 @@ A dev has to write a script to extract data from an API and load it into a datab
 
 This is a common task for a data engineer. AutoETL is a tool that can help with this task.
 
-
-### Extraction
+### Extraction - Crawling Endpoints
+It should improve documentation
+Validate types
 
 1. Add API endpoints
 2. Crawl API to improve documentation, add typing and validate the documentation
 3. Generate python typing and openapi schema
 4. Create a data model to map the API data to the database add types for all inputs (enumeration, regex, etc)
+5. Authentication - RBAC model
+6. Rate limiting
+7. Cost model
+8. Authentication
+
+8. Error handling
+9. Data validation
 
 ### Transformation
 1. Register a target database
@@ -56,6 +83,10 @@ Generate the ETL code
     4. Apply upsertion logic to the staging tables, apply human in the loop logic to the staging tables
 4. Monitoring
     1. response times, payload sizes, error rates, etc
+5. Testing
+    1. Unit tests (Mock Data, Mock API, Mock Database)
+    2. Integration tests
+    3. End to end tests
 
 ### Serving
 Given a target database, generate a REST API to serve the data
