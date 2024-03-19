@@ -48,7 +48,6 @@ def main():
     url = API(
         id="petstore",
         name="Petstore",
-        seed_urls=["https://petstore.swagger.io/v2/pet/1"],
         openapi_spec_url="https://petstore.swagger.io/v2/swagger.json",
         docs=["https://petstore.swagger.io/"],
     )

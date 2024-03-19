@@ -10,7 +10,7 @@ from autoetl import name as NAME
 from autoetl.admin import get_projects
 from autoetl.cli_ui import banner
 from autoetl.config import load_config
-from autoetl.project import ETLProject, delete_project_files
+from autoetl.project import ETLProject, delete_project_files, load_project
 
 
 app = Typer(help="List and activate ETL projects")
@@ -124,23 +124,48 @@ def delete(
 
 
 @app.command()
-def show(project_id: str = None):
+def show(project_id: str = None, file_tree: bool = False):
     """Shows the details of a project."""
     print(f"{banner()}\n")
-    config = load_config()
-    projects = get_projects(config.config_dir)
-    if not project_id or project_id is None or project_id.lower() == "none":
-        project_id = projects.get("active")
+    if project_id is None or project_id.lower() == "none":
+        project_id = None
 
-    if project_list := (projects or {}).get("projects", {}):
-        if project_id in project_list:
-            project = ETLProject(**project_list[project_id])
-            print(f"Project: {project_id}")
-            print(project)
+    config = load_config()
+    if project := load_project(project_id, config=config):
+        print(project)
+        if file_tree:
+            print("\nProject Files:\n")
+            show_file_tree(project.fdir)
+
+
+from pathlib import Path
+
+
+def show_file_tree(fdir: Path, level: int = 0, prefix: str = ""):
+    if not fdir.is_dir():
+        raise ValueError(f"{fdir} is not a valid directory.")
+
+    if level == 0:
+        print(f"[blue]{fdir}[/blue]")
+
+    files = sorted(fdir.glob("*"))
+    num_files = len(files)
+
+    for index, file in enumerate(files, start=1):
+        is_last = index == num_files
+        connector = "└── " if is_last else "├── "
+
+        if file.is_file():
+            print(f"{prefix}{connector}{file.name}")
         else:
-            print(f"Project {project_id} not found in {config.config_dir}")
-    else:
-        print(f"No projects found in {config.config_dir}\n")
+            print(f"{prefix}{connector}[blue]{file.name}[/blue]")
+
+        if file.is_dir():
+            if is_last:
+                new_prefix = prefix + "    "
+            else:
+                new_prefix = prefix + "│   "
+            show_file_tree(file, level + 1, new_prefix)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,9 @@
 import re
+from typing import Callable
+
+from cuid2 import cuid_wrapper
+
+cuid_generator: Callable[[], str] = cuid_wrapper()
 
 
 def make_valid_folder_name(name: str) -> str:

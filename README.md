@@ -37,3 +37,16 @@ autoetl crawl --project petstore
 
 ## Coming Soon
 Read more at [autoetl.dev](https://autoetl.dev) or email us at [sean@closedloop.tech](mailto:sean@closedloop.tech)
+
+
+## Install
+
+```bash
+    pip install autoetl
+    playwright install
+
+    # Install
+    poetry add autoetl
+    poetry shell
+    playwright install
+```

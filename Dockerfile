@@ -32,6 +32,7 @@ COPY . /app/
 
 # # Install the project
 RUN poetry install --no-interaction
+RUN playwright install
 
 # # Command to run tests
 RUN poetry run pytest --cov autoetl && poetry run coverage report

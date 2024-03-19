@@ -8,10 +8,12 @@ from autoetl.cli_ui import banner
 from autoetl.config import load_config
 from autoetl.project import ETLProject
 from autoetl.cli_projects import app as project_cli
+from autoetl.cli_apis import app as api_cli
 
 
 app = Typer(help=f"{(NAME or '').replace('_', ' ')} CLI")
-app.add_typer(project_cli, name="project")
+app.add_typer(project_cli, name="projects")
+app.add_typer(api_cli, name="apis")
 
 
 @app.command()
@@ -21,7 +23,7 @@ def init(
     fdir: str | None = None,
     project_id: str | None = None,
 ):
-    """Main Function"""
+    """Create a new ETL Project"""
     print(f"{banner()}\n")
     print("Creating a new project.\n")
     project = ETLProject(
@@ -35,26 +37,10 @@ def init(
 
 
 @app.command()
-def main():
-    """Main Function"""
-    print(f"{banner()}\n")
-    print(
-        "This is your default command-line interface.  Feel free to customize it as you see fit.\n"
-    )
-
-
-@app.command()
 def show_config():
-    """Main Function"""
+    """Show the current config."""
     print(f"{banner()}\n")
     print(
         "Set `AUTOETL_ENV_FILE` or `AUTOETL_CONFIG_DIR` environment variables to change config.\n"
     )
     print(load_config())
-
-
-@app.command()
-def proj():
-    """Main Function"""
-    print(f"{banner()}\n")
-    print(f"{NAME} v{VERSION}\n")
