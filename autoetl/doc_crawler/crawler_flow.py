@@ -7,27 +7,26 @@ The goal is to fill the storage_dir with the following:
 
 """
 
-from collections import defaultdict
-
-from urllib.parse import urlparse
-import asyncio
-from pathlib import Path
-
-from autoetl.apis.crawler import request_with_retry, is_valid_url, url_domain
 import asyncio
 import contextlib
 import hashlib
 import json
+import re
+from collections import defaultdict
 from pathlib import Path
 from typing import Optional, Set
-from prefect import task, flow
-
-from autoetl.apis.crawler import is_valid_url, url_domain, request_with_retry
+from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from prefect import flow, get_run_logger, task
 
-from autoetl.apis.headless_crawler import render_page
+from autoetl.doc_crawler.headless_crawler import render_page
+from autoetl.doc_crawler.httpx_crawler import (
+    is_valid_url,
+    request_with_retry,
+    url_domain,
+)
+from autoetl.doc_crawler.parsers import get_links_from_html, get_links_json
 
 
 @task
@@ -37,6 +36,7 @@ async def process_response(
     storage_dir: Path,
     url_prefixes: Set[str],
 ):
+    logger = get_run_logger()
     crawl_dir = Path(storage_dir) / "crawl"
 
     if response is None:
@@ -70,27 +70,31 @@ async def process_response(
             if "openapi" in data or "swagger" in data:
                 with open(openapi_spec_dir / f"{content_hash}.json", "w") as f:
                     json.dump(data, f)
-            # TODO look at json schema for links
-            # externalDocs, termsOfService, contact, license.url, info.description, host
-            print(data)
+                logger.info(f"Saved OpenAPI spec: {url}")
+
+            new_links.extend(
+                iter(
+                    get_links_json(
+                        data,
+                        url,
+                        url_prefixes,
+                        content_hash,
+                    )
+                )
+            )
     else:
         # Parse HTML to find new URLs
-        soup = BeautifulSoup(response["content"], "html.parser")
-        for a in soup.find_all("a", href=True):
-            new_url = a["href"].split("#")[0]
-            # Make the URL absolute
-            new_url = urljoin(url, new_url)
-            if is_valid_url(new_url) and new_url != url:
-                new_links.append(
-                    {
-                        "source": url,
-                        "target": new_url,
-                        "text": a.text,
-                        "xpath": None,  # TODO implement xpath
-                        "source_hash": content_hash,
-                        "follow": any(new_url.startswith(u) for u in url_prefixes),
-                    }
+        new_links.extend(
+            iter(
+                get_links_from_html(
+                    response["content"],
+                    url,
+                    url_prefixes,
+                    content_hash,
                 )
+            )
+        )
+    logger.info(f"Found {len(new_links)} new links in {url}")
     return new_links
 
 
@@ -103,7 +107,7 @@ async def crawl(
     max_crawl_depth: int = 3,
     max_crawl_count: int = 100,
 ):
-    print("Crawling data from the web")
+    logger = get_run_logger()
     if storage_dir is None:
         raise ValueError("storage_dir is required")
     if seed_urls is None or not seed_urls:
@@ -125,7 +129,7 @@ async def crawl(
     for url in seed_urls:
         if url not in visited_urls:
             visited_urls.add(url)
-            print("enqueue", 0, url)
+            logger.debug(f"queued (depth=0): '{url}'")
             await queue.put((url, 0))  # (url, depth)
 
     crawl_graph = []
@@ -135,6 +139,7 @@ async def crawl(
         if depth >= max_crawl_depth or crawl_count > max_crawl_count:
             continue
 
+        logger.info(f"Crawling: {url}")
         if url.endswith(".json") or url.endswith(".yaml"):
             response = await request_with_retry(url, auth=auth)
         else:
@@ -146,13 +151,14 @@ async def crawl(
             new_url = new_link.get("target")
             if new_url not in visited_urls and new_link.get("follow"):
                 visited_urls.add(new_url)
-                print("enqueue", depth + 1, new_url)
+                logger.debug(f"queued (depth={depth + 1}): '{new_url}'")
                 await queue.put((new_url, depth + 1))
 
     # Save Crawl Graph
     with open(storage_dir / "crawl_graph.json", "w") as f:
-        json.dump(crawl_graph, f)
-    print("Crawling completed")
+        json.dump(crawl_graph, f, indent=2)
+    logger.info(f"Saved crawl to {storage_dir}")
+    logger.info(f"Visited {len(visited_urls)} URLs")
 
 
 def add_seeds_to_url_prefixes(seed_urls, url_prefixes):

@@ -4,7 +4,7 @@ from typing import Iterator, Optional
 import requests
 from autoetl.apis.models import API
 from autoetl.apis.openapi_spec_2 import OpenAPIObject
-from autoetl.apis.step1_crawl import crawl
+from autoetl.doc_crawler.crawler_flow import crawl
 
 
 def get_likely_openapi_spec(
@@ -53,10 +53,8 @@ def main():
         docs=["https://petstore.swagger.io/"],
     )
     # TODO Locate openapi spec
-
     seed_urls = url.seed_urls + [url.openapi_spec_url] + url.docs
-
-    asyncio.run(crawl("petstore", seed_urls))
+    asyncio.run(crawl("petstore2", seed_urls))
 
     # for openapi_spec_url, spec, match_score in get_likely_openapi_spec(
     #     url.openapi_spec_url

@@ -1,15 +1,17 @@
 import time
-from playwright.async_api import async_playwright
-from prefect import task
-from autoetl.apis.crawler import DEFAULT_USER_AGENT
 
-DEFAULT_BROWSER_TYPE = "chromium"
+from playwright.async_api import async_playwright
+from prefect import get_run_logger, task
+
+from autoetl.doc_crawler.config import DEFAULT_BROWSER_TYPE, DEFAULT_USER_AGENT
 
 
 @task(retries=3)
 async def render_page(
     url: str, user_agent: str = DEFAULT_USER_AGENT, screenshot_path: str | None = None
 ):
+    logger = get_run_logger()
+    logger.debug(f"browser visit {DEFAULT_BROWSER_TYPE} {url}")
     start_time = time.time()
     async with async_playwright() as p:
         browser_type = getattr(p, DEFAULT_BROWSER_TYPE)
