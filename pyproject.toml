@@ -35,6 +35,9 @@ prefect = "^2.16.4"
 playwright = "^1.42.0"
 pytest-playwright = "^0.4.4"
 cuid2 = "^2.0.0"
+openapi-spec-validator = "^0.7.1"
+anthropic = "^0.21.1"
+datamodel-code-generator = "^0.25.5"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.0"

@@ -1,12 +1,8 @@
 from pathlib import Path
-import pyfiglet
 from rich import print
 from typer import Typer
 import yaml
 
-from autoetl import __description__ as DESCRIPTION
-from autoetl import __version__ as VERSION
-from autoetl import name as NAME
 from autoetl.admin import get_projects
 from autoetl.cli_ui import banner
 from autoetl.config import load_config
@@ -136,9 +132,6 @@ def show(project_id: str = None, file_tree: bool = False):
         if file_tree:
             print("\nProject Files:\n")
             show_file_tree(project.fdir)
-
-
-from pathlib import Path
 
 
 def show_file_tree(fdir: Path, level: int = 0, prefix: str = ""):

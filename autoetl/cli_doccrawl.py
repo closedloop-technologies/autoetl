@@ -16,24 +16,8 @@ from autoetl.config import Config, load_config
 from autoetl.helpers import make_valid_folder_name
 from autoetl.project import ETLProject, delete_project_files, load_project
 
-doccrawl_app = Typer(help="Crawl API Documents")
-
-
-@doccrawl_app.command()
-def get(api_id: str, project_id: str = None):
-    """Gets the details of an API."""
-    print(banner())
-    project = get_project(project_id)
-    if api := get_api(api_id, project.fdir):
-        print(f"\nAPI:\n")
-        print(f"  {api}")
-        print(f"\n")
-    else:
-        print(f"\nNo API found in {project.id} with id {api_id}\n")
-
 
 app = Typer(help="Register, Crawl and Manage Source APIs")
-app.add_typer(doccrawl_app, name="docs")
 
 
 def get_project(project_id: str, config: Config = None):

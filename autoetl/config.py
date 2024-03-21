@@ -24,6 +24,7 @@ class Config:
     version: str = version
     env_file: str = ".env"
     config_dir: str = Path.home().joinpath(".autoetl")
+    anthropic_api_key: str | None = None
 
 
 def load_config() -> Config:
@@ -32,7 +33,7 @@ def load_config() -> Config:
     ).joinpath(".autoetl")
     env_file = Path(
         os.environ.get("AUTOETL_ENV_FILE", None)
-        or Path(__file__).parent.joinpath(".env")
+        or Path(__file__).parent.parent.joinpath(".env")
     )
 
     load_dotenv(verbose=True, dotenv_path=env_file, override=False)
@@ -43,4 +44,5 @@ def load_config() -> Config:
         version=version,
         env_file=str(env_file),
         config_dir=str(config_dir),
+        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
     )

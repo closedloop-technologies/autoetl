@@ -30,6 +30,7 @@ def create_doccrawl(
         raise ValueError(f"API with id {api_id} does not exist")
 
     doccrawl_id = cuid_generator()
+    doccrawl_fdir = fdir / "apis" / api_id / "docs" / f"crawl-{doccrawl_id}"
     c = DocCrawl(
         id=doccrawl_id,
         api_id=api_id,
@@ -39,12 +40,24 @@ def create_doccrawl(
         max_crawl_depth=max_crawl_depth,
         max_crawl_count=max_crawl_count,
         start_time=datetime.datetime.now(datetime.timezone.utc),
-        storage_dir=fdir / "docs" / api_id / doccrawl_id,
+        storage_dir=doccrawl_fdir,
     )
-    spec_path = fdir / "docs" / api_id / c.id / "spec.yaml"
+    spec_path = doccrawl_fdir / "spec.yaml"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
     with open(spec_path, "w") as fh:
         data = c.model_dump()
         data["storage_dir"] = str(data["storage_dir"])
         yaml.safe_dump(data, fh)
     return c
+
+
+def list_doccrawls(fdir: Path | str, api_id: str) -> list[DocCrawl]:
+    fdir = Path(fdir)
+    if not get_api(api_id, fdir):
+        raise ValueError(f"API with id {api_id} does not exist")
+    return [
+        DocCrawl(**d)
+        for d in yaml.safe_load_all(
+            (fdir / "apis" / api_id / "docs").rglob("crawl-*/spec.yaml")
+        )
+    ]

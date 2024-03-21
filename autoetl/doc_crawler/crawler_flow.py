@@ -45,10 +45,10 @@ async def process_response(
     url_hash = hashlib.md5(url.encode()).hexdigest()
     content_hash = hashlib.md5(response["content"].encode()).hexdigest()
 
-    url_dir = crawl_dir / url_hash
+    url_dir = crawl_dir / f"url-{url_hash}"
     url_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(url_dir / f"{content_hash}.info", "w") as f:
+    with open(url_dir / f"doc-{content_hash}.info", "w") as f:
         json.dump(
             {
                 "response": response.get("response"),
@@ -57,7 +57,7 @@ async def process_response(
             f,
         )
 
-    with open(url_dir / f"{content_hash}.data", "w") as f:
+    with open(url_dir / f"doc-{content_hash}.data", "w") as f:
         f.write(response["content"])
 
     new_links = []
