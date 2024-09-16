@@ -1,0 +1,1 @@
+{"response": {"elapsed_seconds": 3.1767008304595947, "content_length": 44461}, "request": {"url": "https://the-odds-api.com/historical-odds-data/", "user_agent": "autoetl/0.1.1", "browser_type": "chromium"}}

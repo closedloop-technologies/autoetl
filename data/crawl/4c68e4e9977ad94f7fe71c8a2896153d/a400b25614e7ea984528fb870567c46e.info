@@ -1,0 +1,1 @@
+{"response": {"elapsed_seconds": 2.601527452468872, "content_length": 290}, "request": {"url": "https://api.the-odds-api.com/v4/historical/sports/basketball_nba/events/da359da99aa27e97d38f2df709343998/odds?apiKey=YOUR_API_KEY&date=2023-11-29T22:45:00Z&regions=us&markets=player_points,h2h_q1", "user_agent": "autoetl/0.1.1", "browser_type": "chromium"}}

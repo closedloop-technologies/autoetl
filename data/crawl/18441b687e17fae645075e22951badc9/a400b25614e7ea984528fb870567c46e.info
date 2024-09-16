@@ -1,0 +1,1 @@
+{"response": {"elapsed_seconds": 2.6355504989624023, "content_length": 290}, "request": {"url": "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?regions=us&oddsFormat=american&apiKey=YOUR_API_KEY", "user_agent": "autoetl/0.1.1", "browser_type": "chromium"}}

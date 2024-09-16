@@ -1,0 +1,1 @@
+{"response": {"elapsed_seconds": 3.2324187755584717, "content_length": 69256}, "request": {"url": "https://the-odds-api.com/sports-odds-data/bookmaker-apis.html", "user_agent": "autoetl/0.1.1", "browser_type": "chromium"}}

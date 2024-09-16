@@ -1,0 +1,1 @@
+{"response": {"elapsed_seconds": 2.6236236095428467, "content_length": 290}, "request": {"url": "https://api.the-odds-api.com/v4/sports/upcoming/odds/?regions=us&markets=h2h&apiKey=YOUR_API_KEY", "user_agent": "autoetl/0.1.1", "browser_type": "chromium"}}

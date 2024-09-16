@@ -1,0 +1,1 @@
+{"response": {"elapsed_seconds": 2.865708827972412, "content_length": 290}, "request": {"url": "https://api.the-odds-api.com/v4/historical/sports/basketball_nba/events?apiKey=YOUR_API_KEY&date=2023-11-29T22:42:00Z", "user_agent": "autoetl/0.1.1", "browser_type": "chromium"}}

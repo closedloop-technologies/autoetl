@@ -1,0 +1,1 @@
+{"response": {"elapsed_seconds": 3.402815103530884, "content_length": 46469}, "request": {"url": "https://the-odds-api.com/sports-odds-data/betting-markets.html", "user_agent": "autoetl/0.1.1", "browser_type": "chromium"}}
